@@ -3,62 +3,66 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from Base.base_class import Base
+from selenium.webdriver.support.ui import Select
+
 
 class Main_page(Base):
 
-    url = 'https://www.cian.ru/'
+    url = 'https://qatest.datasub.com/quote.html'
 
     def __init__(self, driver):
         super().__init__(driver)
         self.driver = driver
 
     # Locators
-    button_rent = '//li[@class="_025a50318d--list-element--wEqv2"]'
-    button_quantity_rooms = '//*[@id="frontend-mainpage"]/div/section/div/div[2]/div[2]/div[1]/div[1]/div[1]/div/div[2]/div/div[2]/button'
-    button_2 = '//*[@id="frontend-mainpage"]/div/section/div/div[2]/div[2]/div[1]/div[1]/div/div/div[2]/div/div[2]/div/ul[1]/li[2]/button'
-    button_price = '//*[@id="frontend-mainpage"]/div/section/div/div[2]/div[2]/div[1]/div[1]/div[1]/div/div[2]/div/div[3]/button'
-    input_price = '//input[@placeholder="до"]'
-    input_city = '//input[@class="_025a50318d--suggestion-input--UYl_Y _025a50318d--search--rgXki _025a50318d--input--Cqvxw"]'
-    button_find = '//a[@class="_025a50318d--button--ljPOU"]'
+    name_field = '//input[@id="q_name"]'
+    email_field = '//input[@id="q_email"]'
+    service_dropdown = '//select[@id="q_service"]'
+    message_field = '//textarea[@id="q_message"]'
+    submit_button = '//button[@class="btn btn-dark w-100 py-3"]'
 
-    def click_rent_button(self):
-        WebDriverWait(self.driver, 30).until(EC.element_to_be_clickable((By.XPATH, self.button_rent))).click()
-        print("Click on Rent button")
 
-    def select_quantity_rooms(self):
-        WebDriverWait(self.driver, 30).until(EC.element_to_be_clickable((By.XPATH, self.button_quantity_rooms))).click()
-        print("Select quantity of rooms")
+    def fill_name(self, name):
+        WebDriverWait(self.driver, 30).until(EC.element_to_be_clickable((By.XPATH, self.name_field))).send_keys(name)
+        print(f"Entered name: {name}")
 
-    def select_1_room(self):
-        WebDriverWait(self.driver, 30).until(EC.element_to_be_clickable((By.XPATH, self.button_2))).click()
-        print("Select 1-room apartment")
+    def fill_email(self, email):
+        WebDriverWait(self.driver, 30).until(EC.element_to_be_clickable((By.XPATH, self.email_field))).send_keys(email)
+        print(f"Entered email: {email}")
 
-    def click_price(self):
-        WebDriverWait(self.driver, 30).until(EC.element_to_be_clickable((By.XPATH, self.button_price))).click()
-        print(f"Button clicked")
+    def select_service(self):
+        dropdown_element = WebDriverWait(self.driver, 30).until(
+            EC.presence_of_element_located((By.XPATH, self.service_dropdown))
+        )
+        select = Select(dropdown_element)
+        select.select_by_visible_text("Service 1")
+        print(f"Selected service: Service 1")
 
-    def input_price_limit(self, price):
-        WebDriverWait(self.driver, 30).until(EC.element_to_be_clickable((By.XPATH, self.input_price))).send_keys(price)
-        print(f"Set price limit to {price} rubles")
 
-    def input_city_name(self, city):
-        WebDriverWait(self.driver, 30).until(EC.element_to_be_clickable((By.XPATH, self.input_city))).send_keys(city)
-        print(f"Set city to {city}")
+    def fill_message(self, message):
+        WebDriverWait(self.driver, 30).until(EC.element_to_be_clickable((By.XPATH, self.message_field))).send_keys(message)
+        print(f"Entered message: {message}")
 
-    def click_find_button(self):
-        WebDriverWait(self.driver, 30).until(EC.element_to_be_clickable((By.XPATH, self.button_find))).click()
-        print("Click on Find button")
+    def click_button(self):
+        WebDriverWait(self.driver, 30).until(EC.element_to_be_clickable((By.XPATH, self.submit_button))).click()
+        print("Clicked Submit")
 
-    # Methods
-    def set_filters_and_search(self):
+
+
+    # Happy path
+    def fill_form_happy_path(self):
         self.driver.get(self.url)
         self.driver.maximize_window()
         time.sleep(1)
-        self.click_rent_button()
-        self.select_quantity_rooms()
-        self.select_1_room()
-        self.click_price()
-        self.input_price_limit('50000')
-        self.input_city_name('Зеленоград')
-        self.click_find_button()
+        self.driver.execute_script("window.scrollBy(0, 500);")
+        time.sleep(1)
+        self.fill_name("Alex Petrov")
+        time.sleep(1)
+        self.fill_email("alex@example.com")
+        time.sleep(1)
+        self.select_service()
+        self.fill_message("Random message")
+        time.sleep(1)
+        self.click_button()
+
 
